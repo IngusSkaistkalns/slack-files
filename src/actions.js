@@ -7,21 +7,27 @@ export function updateToken(token) {
   return { type: TOKEN_UPDATED, payload: { token } }
 }
 
-export const FETCH_STARTED = 'FETCH_STARTED'
-export const FETCH_COMPLETED = 'FETCH_COMPLETED'
-export const FETCH_ERROR = 'FETCH_ERROR'
+export const FILES_FETCHING = 'FILES_FETCHING'
+export const FILES_LOADED = 'FILES_LOADED'
+export const FILES_ERROR = 'FILES_ERROR'
 export function fetchFiles() {
   return (dispatch, getState) => {
     const { token } = getState()
 
-    dispatch({ type: FETCH_STARTED })
+    dispatch({ type: FILES_FETCHING })
 
     postJson(`${SLACK_API_ROOT}/files.list`, { token }).then(({ ok, files, error }) => {
       if(ok) {
-        dispatch({ type: FETCH_COMPLETED, payload: { files }})
+        dispatch({ type: FILES_LOADED, payload: { files }})
       } else {
-        dispatch({ type: FETCH_ERROR, payload: { error } })
+        dispatch({ type: FILES_ERROR, payload: { error } })
       }
     })
+  }
+}
+
+export function refresh() {
+  return (dispatch) => {
+    dispatch(fetchFiles())
   }
 }

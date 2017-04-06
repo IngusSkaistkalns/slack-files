@@ -3,21 +3,29 @@ import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
 import Refresh from 'material-ui/svg-icons/navigation/refresh'
 
+const styles = {
+  root: {
+    display: 'flex',
+    flexFlow: 'row'
+  },
+  field: {
+    flex: 1
+  }
+}
+
 class Header extends PureComponent {
   render() {
-    const { token, updateToken, fetchFiles } = this.props
+    const { token, updateToken, refresh } = this.props
 
-    return <div>
-      <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} />
-      <IconButton onTouchTap={fetchFiles}>
-        <Refresh />
-      </IconButton>
+    return <div style={styles.root}>
+      <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} style={styles.field} />
+      <IconButton onTouchTap={refresh}><Refresh /></IconButton>
     </div>
   }
 }
 
 import { connect } from 'react-redux'
-import { updateToken, fetchFiles } from './actions'
+import { updateToken, refresh } from './actions'
 
 function mapStateToProps({ token }) {
   return { token }
@@ -26,7 +34,7 @@ function mapStateToProps({ token }) {
 function mapDispatchToProps(dispatch) {
   return {
     updateToken: (_e, token) => dispatch(updateToken(token)),
-    fetchFiles: () => dispatch(fetchFiles())
+    refresh: () => dispatch(refresh())
   }
 }
 
