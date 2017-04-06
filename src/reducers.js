@@ -1,10 +1,11 @@
 import merge from 'lodash/merge'
 import keyBy from 'lodash/keyBy'
-import { TOKEN_UPDATED, FILES_LOADED } from './actions'
+import { TOKEN_UPDATED, FILES_LOADED, USERS_LOADED } from './actions'
 
 const initialState = {
   token: '',
-  files: {}
+  files: {},
+  users: {}
 }
 
 export default function(state = initialState, action) {
@@ -15,6 +16,8 @@ export default function(state = initialState, action) {
       return merge({}, state, { token: payload.token })
     case FILES_LOADED:
       return merge({}, state, { files: merge({}, state.files, keyBy(payload.files, 'id')) })
+    case USERS_LOADED:
+      return merge({}, state, { users: merge({}, state.users, keyBy(payload.users, 'id')) })
     default:
       return state
   }

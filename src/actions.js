@@ -26,8 +26,28 @@ export function fetchFiles() {
   }
 }
 
+export const USERS_FETCHING = 'USERS_FETCHING'
+export const USERS_LOADED = 'USERS_LOADED'
+export const USERS_ERROR = 'USERS_ERROR'
+export function fetchUsers() {
+  return (dispatch, getState) => {
+    const { token } = getState()
+
+    dispatch({ type: USERS_FETCHING })
+
+    postJson(`${SLACK_API_ROOT}/users.list`, { token }).then(({ ok, members, error }) => {
+      if (ok) {
+        dispatch({ type: USERS_LOADED, payload: { users: members } })
+      } else {
+        dispatch({ type: USERS_ERROR, payload: { error } })
+      }
+    })
+  }
+}
+
 export function refresh() {
   return (dispatch) => {
     dispatch(fetchFiles())
+    dispatch(fetchUsers())
   }
 }
