@@ -10,15 +10,20 @@ export function updateToken(token) {
 export const FILES_FETCHING = 'FILES_FETCHING'
 export const FILES_LOADED = 'FILES_LOADED'
 export const FILES_ERROR = 'FILES_ERROR'
-export function fetchFiles() {
+export function fetchFiles(currentPage = 1) {
   return (dispatch, getState) => {
     const { token } = getState()
 
     dispatch({ type: FILES_FETCHING })
 
-    postJson(`${SLACK_API_ROOT}/files.list`, { token }).then(({ ok, files, error }) => {
+    postJson(`${SLACK_API_ROOT}/files.list`, { token, page: currentPage }).then(({ ok, files, error, paging }) => {
       if(ok) {
         dispatch({ type: FILES_LOADED, payload: { files }})
+
+        const { page, pages } = paging
+        if (page < pages) {
+          dispatch(fetchFiles(currentPage + 1))
+        }
       } else {
         dispatch({ type: FILES_ERROR, payload: { error } })
       }
