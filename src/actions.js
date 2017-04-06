@@ -55,9 +55,26 @@ export function fetchUsers() {
   }
 }
 
+export const FILES_RESET = 'FILES_RESET'
+export const USERS_RESET = 'USERS_RESET'
 export function refresh() {
   return (dispatch) => {
+    dispatch({ type: FILES_RESET })
+    dispatch({ type: USERS_RESET })
     dispatch(fetchFiles())
     dispatch(fetchUsers())
+  }
+}
+
+export const FILE_DELETED = 'FILE_DELETED'
+export function deleteFile(id) {
+  return (dispatch, getState) => {
+    const { token } = getState()
+
+    postJson(`${SLACK_API_ROOT}/files.delete`, { token, file: id }).then(({ ok }) => {
+      if (ok) {
+        dispatch({ type: FILE_DELETED, payload: { id } })
+      }
+    })
   }
 }

@@ -1,20 +1,9 @@
 import React, { PureComponent } from 'react'
 import map from 'lodash/map'
-import { GridList, GridTile } from 'material-ui/GridList'
-import IconButton from 'material-ui/IconButton'
-import Delete from 'material-ui/svg-icons/action/delete'
-import moment from 'moment'
+import { GridList } from 'material-ui/GridList'
 import values from 'lodash/values'
 import sortBy from 'lodash/sortBy'
-
-const styles = {
-  cell: {
-    display: 'flex'
-  },
-  preview: {
-    margin: '35px auto'
-  }
-}
+import FileTile from './FileTile'
 
 const SORT_FUNCTIONS = {
   '-timestamp': ({ timestamp }) => -1 * timestamp,
@@ -23,26 +12,14 @@ const SORT_FUNCTIONS = {
   '+size': ({ size }) => size
 }
 
-class Header extends PureComponent {
+class FileList extends PureComponent {
   render() {
     const { files, allUsers, sortBy: sort } = this.props
     const sorted = sortBy(values(files), SORT_FUNCTIONS[sort] || 'id')
 
-    const tiles = map(sorted, ({ id, name, title, thumb_160, timestamp, user, pretty_type }) => {
-      const { name: userName } = allUsers[user] || {}
-      const date = moment.unix(timestamp)
-
-      const subtitle = <span>
-        <strong>{userName}</strong> @ {date.format('DD.MM.YYYY')}
-      </span>
-
-      const preview = thumb_160 ? <img src={thumb_160} alt={title} /> : <div style={styles.preview}>{pretty_type}</div>
-
-      const action = <IconButton><Delete color="white" /></IconButton>
-
-      return <GridTile key={id} title={name} subtitle={subtitle} actionIcon={action} style={styles.cell} >
-        {preview}
-      </GridTile>
+    const tiles = map(sorted, (file) => {
+      const { name: userName } = allUsers[file.user] || {}
+      return <FileTile {...file} userName={userName} key={file.id}/>
     })
 
     return <GridList cellHeight={160} cols={4} >
@@ -61,4 +38,4 @@ function mapDispatchToProps(dispatch) {
   return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header)
+export default connect(mapStateToProps, mapDispatchToProps)(FileList)
