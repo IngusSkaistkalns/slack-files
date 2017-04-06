@@ -2,24 +2,40 @@ import React, { PureComponent } from 'react'
 import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
 import Refresh from 'material-ui/svg-icons/navigation/refresh'
-
-const styles = {
-  root: {
-    display: 'flex',
-    flexFlow: 'row'
-  },
-  field: {
-    flex: 1
-  }
-}
+import Build from 'material-ui/svg-icons/action/build'
+import Dialog from 'material-ui/Dialog'
+import RaisedButton from 'material-ui/RaisedButton'
+import AppBar from 'material-ui/AppBar'
 
 class Header extends PureComponent {
+  state = {
+    tokenModalOpen: false
+  }
+
+  componentDidMount() {
+    this.setState({ tokenModalOpen: String(this.props.token).length < 1 })
+  }
+
+  openModal = () => {
+    this.setState({ tokenModalOpen: true })
+  }
+
+  closeModal = () => {
+    this.setState({ tokenModalOpen: false })
+  }
+
   render() {
     const { token, updateToken, refresh } = this.props
 
-    return <div style={styles.root}>
-      <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} style={styles.field} />
-      <IconButton onTouchTap={refresh}><Refresh /></IconButton>
+    const dialogButton = <RaisedButton label="OK" primary={true} onTouchTap={this.closeModal} />
+
+    return <div>
+      <AppBar title='Slack file cleaner' onTitleTouchTap={this.openModal}
+        iconElementLeft={<IconButton onTouchTap={this.openModal}><Build /></IconButton>}
+        iconElementRight={<IconButton onTouchTap={refresh}><Refresh /></IconButton>} />
+      <Dialog title="Enter API token" actions={dialogButton} modal={true} open={this.state.tokenModalOpen} >
+        <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} />
+      </Dialog>
     </div>
   }
 }
