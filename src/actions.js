@@ -7,6 +7,11 @@ export function updateToken(token) {
   return { type: TOKEN_UPDATED, payload: { token } }
 }
 
+export const SORT_BY_CHANGED = 'SORT_BY_CHANGED'
+export function updateSortBy(sortBy) {
+  return { type: SORT_BY_CHANGED, payload: { sortBy } }
+}
+
 export const FILES_FETCHING = 'FILES_FETCHING'
 export const FILES_LOADED = 'FILES_LOADED'
 export const FILES_ERROR = 'FILES_ERROR'

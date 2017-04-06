@@ -4,6 +4,8 @@ import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import Delete from 'material-ui/svg-icons/action/delete'
 import moment from 'moment'
+import values from 'lodash/values'
+import sortBy from 'lodash/sortBy'
 
 const styles = {
   cell: {
@@ -14,11 +16,19 @@ const styles = {
   }
 }
 
+const SORT_FUNCTIONS = {
+  '-timestamp': ({ timestamp }) => -1 * timestamp,
+  '+timestamp': ({ timestamp }) => timestamp,
+  '-size': ({ size }) => -1 * size,
+  '+size': ({ size }) => size
+}
+
 class Header extends PureComponent {
   render() {
-    const { files, allUsers } = this.props
+    const { files, allUsers, sortBy: sort } = this.props
+    const sorted = sortBy(values(files), SORT_FUNCTIONS[sort] || 'id')
 
-    const tiles = map(files, ({ id, name, title, thumb_160, timestamp, user, pretty_type }) => {
+    const tiles = map(sorted, ({ id, name, title, thumb_160, timestamp, user, pretty_type }) => {
       const { name: userName } = allUsers[user] || {}
       const date = moment.unix(timestamp)
 
@@ -43,8 +53,8 @@ class Header extends PureComponent {
 
 import { connect } from 'react-redux'
 
-function mapStateToProps({ files, users }) {
-  return { files, allUsers: users }
+function mapStateToProps({ files, users, sortBy }) {
+  return { files, allUsers: users, sortBy }
 }
 
 function mapDispatchToProps(dispatch) {

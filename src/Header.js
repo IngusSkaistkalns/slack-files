@@ -6,6 +6,7 @@ import Build from 'material-ui/svg-icons/action/build'
 import Dialog from 'material-ui/Dialog'
 import RaisedButton from 'material-ui/RaisedButton'
 import AppBar from 'material-ui/AppBar'
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar'
 
 class Header extends PureComponent {
   state = {
@@ -25,7 +26,7 @@ class Header extends PureComponent {
   }
 
   render() {
-    const { token, updateToken, refresh } = this.props
+    const { token, updateToken, refresh, sortBy, updateSortBy } = this.props
 
     const dialogButton = <RaisedButton label="OK" primary={true} onTouchTap={this.closeModal} />
 
@@ -33,6 +34,14 @@ class Header extends PureComponent {
       <AppBar title='Slack file cleaner' onTitleTouchTap={this.openModal}
         iconElementLeft={<IconButton onTouchTap={this.openModal}><Build /></IconButton>}
         iconElementRight={<IconButton onTouchTap={refresh}><Refresh /></IconButton>} />
+      <Toolbar>
+        <ToolbarGroup firstChild={true}>
+          <RaisedButton label="Newest" primary={sortBy === '-timestamp'} onTouchTap={updateSortBy.bind(this, '-timestamp')} />
+          <RaisedButton label="Oldest" primary={sortBy === '+timestamp'} onTouchTap={updateSortBy.bind(this, '+timestamp')} />
+          <RaisedButton label="Biggest" primary={sortBy === '-size'} onTouchTap={updateSortBy.bind(this, '-size')} />
+          <RaisedButton label="Smallest" primary={sortBy === '+size'} onTouchTap={updateSortBy.bind(this, '+size')} />
+        </ToolbarGroup>
+      </Toolbar>
       <Dialog title="Enter API token" actions={dialogButton} modal={true} open={this.state.tokenModalOpen} >
         <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} />
       </Dialog>
@@ -41,16 +50,17 @@ class Header extends PureComponent {
 }
 
 import { connect } from 'react-redux'
-import { updateToken, refresh } from './actions'
+import { updateToken, refresh, updateSortBy } from './actions'
 
-function mapStateToProps({ token }) {
-  return { token }
+function mapStateToProps({ token, sortBy }) {
+  return { token, sortBy }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     updateToken: (_e, token) => dispatch(updateToken(token)),
-    refresh: () => dispatch(refresh())
+    refresh: () => dispatch(refresh()),
+    updateSortBy: (sortBy) => dispatch(updateSortBy(sortBy))
   }
 }
 
