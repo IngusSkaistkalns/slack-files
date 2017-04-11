@@ -13,7 +13,7 @@ const store = createStore(
   reducer,
   composeEnhancers(
     applyMiddleware(thunk),
-    persistState(['token', 'files', 'users', 'sortBy'], {
+    persistState(['token', 'files', 'users', 'sortBy', 'filterUser'], {
       key: 'slack-files'
     })
   )

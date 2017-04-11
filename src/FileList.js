@@ -3,7 +3,10 @@ import map from 'lodash/map'
 import { GridList } from 'material-ui/GridList'
 import values from 'lodash/values'
 import sortBy from 'lodash/sortBy'
+import take from 'lodash/take'
+import filter from 'lodash/filter'
 import FileTile from './FileTile'
+import RaisedButton from 'material-ui/RaisedButton'
 
 const SORT_FUNCTIONS = {
   '-timestamp': ({ timestamp }) => -1 * timestamp,
@@ -13,25 +16,43 @@ const SORT_FUNCTIONS = {
 }
 
 class FileList extends PureComponent {
-  render() {
-    const { files, allUsers, sortBy: sort } = this.props
-    const sorted = sortBy(values(files), SORT_FUNCTIONS[sort] || 'id')
+  state = {
+    limit: 50
+  }
 
-    const tiles = map(sorted, (file) => {
+  loadMore = () => {
+    this.setState({ limit: this.state.limit + 50 })
+  }
+
+  render() {
+    const { files, allUsers, sortBy: sort, filterUser } = this.props
+    const { limit } = this.state
+
+    const filtered = filter(values(files), ({ user }) => !filterUser || user === filterUser)
+
+    const sorted = sortBy(filtered, SORT_FUNCTIONS[sort] || 'id')
+
+    const tiles = map(take(sorted, limit), (file) => {
       const { name: userName } = allUsers[file.user] || {}
       return <FileTile {...file} userName={userName} key={file.id}/>
     })
 
-    return <GridList cellHeight={160} cols={4} >
-      {tiles}
-    </GridList>
+    let moreButton = null
+    if (sorted.length > limit) {
+      moreButton = <RaisedButton label="Load more" fullWidth={true} onTouchTap={this.loadMore} />
+    }
+
+    return <div>
+      <GridList cellHeight={160} cols={4} >{tiles}</GridList>
+      {moreButton}
+    </div>
   }
 }
 
 import { connect } from 'react-redux'
 
-function mapStateToProps({ files, users, sortBy }) {
-  return { files, allUsers: users, sortBy }
+function mapStateToProps({ files, users, sortBy, filterUser }) {
+  return { files, allUsers: users, sortBy, filterUser }
 }
 
 function mapDispatchToProps(dispatch) {

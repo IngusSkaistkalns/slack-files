@@ -7,6 +7,9 @@ import Dialog from 'material-ui/Dialog'
 import RaisedButton from 'material-ui/RaisedButton'
 import AppBar from 'material-ui/AppBar'
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem'
+import map from 'lodash/map'
 
 class Header extends PureComponent {
   state = {
@@ -26,7 +29,7 @@ class Header extends PureComponent {
   }
 
   render() {
-    const { token, updateToken, refresh, sortBy, updateSortBy } = this.props
+    const { token, updateToken, refresh, sortBy, updateSortBy, users, filterByUser, filterUser } = this.props
 
     const dialogButton = <RaisedButton label="OK" primary={true} onTouchTap={this.closeModal} />
 
@@ -41,6 +44,12 @@ class Header extends PureComponent {
           <RaisedButton label="Biggest" primary={sortBy === '-size'} onTouchTap={updateSortBy.bind(this, '-size')} />
           <RaisedButton label="Smallest" primary={sortBy === '+size'} onTouchTap={updateSortBy.bind(this, '+size')} />
         </ToolbarGroup>
+        <ToolbarGroup>
+          <SelectField floatingLabelText="Filter by user" value={filterUser} onChange={filterByUser} >
+            <MenuItem value={null} primaryText="" />
+            {map(users, (user) => <MenuItem value={user.id} primaryText={user.name} key={user.id} />) }
+          </SelectField>
+        </ToolbarGroup>
       </Toolbar>
       <Dialog title="Enter API token" actions={dialogButton} modal={true} open={this.state.tokenModalOpen} >
         <TextField floatingLabelText="Slack API token" fullWidth={true} value={token} onChange={updateToken} />
@@ -50,17 +59,18 @@ class Header extends PureComponent {
 }
 
 import { connect } from 'react-redux'
-import { updateToken, refresh, updateSortBy } from './actions'
+import { updateToken, refresh, updateSortBy, updateFilterUser } from './actions'
 
-function mapStateToProps({ token, sortBy }) {
-  return { token, sortBy }
+function mapStateToProps({ token, sortBy, users, filterUser }) {
+  return { token, sortBy, users, filterUser }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     updateToken: (_e, token) => dispatch(updateToken(token)),
     refresh: () => dispatch(refresh()),
-    updateSortBy: (sortBy) => dispatch(updateSortBy(sortBy))
+    updateSortBy: (sortBy) => dispatch(updateSortBy(sortBy)),
+    filterByUser: (_event, _idx, id) => dispatch(updateFilterUser(id))
   }
 }
 

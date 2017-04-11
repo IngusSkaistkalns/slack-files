@@ -12,6 +12,11 @@ export function updateSortBy(sortBy) {
   return { type: SORT_BY_CHANGED, payload: { sortBy } }
 }
 
+export const FILTER_USER_CHANGED = 'FILTER_USER_CHANGED'
+export function updateFilterUser(id) {
+  return { type: FILTER_USER_CHANGED, payload: { id } }
+}
+
 export const FILES_FETCHING = 'FILES_FETCHING'
 export const FILES_LOADED = 'FILES_LOADED'
 export const FILES_ERROR = 'FILES_ERROR'

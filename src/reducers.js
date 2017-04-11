@@ -2,11 +2,12 @@ import merge from 'lodash/merge'
 import assign from 'lodash/assign'
 import keyBy from 'lodash/keyBy'
 import omit from 'lodash/omit'
-import { TOKEN_UPDATED, FILES_LOADED, USERS_LOADED, SORT_BY_CHANGED, FILE_DELETED, FILES_RESET, USERS_RESET } from './actions'
+import { TOKEN_UPDATED, FILES_LOADED, USERS_LOADED, SORT_BY_CHANGED, FILE_DELETED, FILES_RESET, USERS_RESET, FILTER_USER_CHANGED } from './actions'
 
 const initialState = {
   token: '',
   sortBy: '-timestamp',
+  filterUser: null,
   files: {},
   users: {}
 }
@@ -29,6 +30,8 @@ export default function(state = initialState, action) {
       return merge({}, state, { sortBy: payload.sortBy })
     case FILE_DELETED:
       return assign({}, state, { files: omit(state.files, [payload.id]) })
+    case FILTER_USER_CHANGED:
+      return merge({}, state, { filterUser: payload.id })
     default:
       return state
   }
